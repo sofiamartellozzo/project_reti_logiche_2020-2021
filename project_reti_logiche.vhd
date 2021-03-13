@@ -1,20 +1,7 @@
--- Company: 
--- Engineer: 
--- 
--- Create Date: 24.02.2021 10:04:39
--- Design Name: 
--- Module Name: project_reti_logiche - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
+----------------------------------------------------------------------------------
+-- Progetto di Reti Logiche AA 2020-2021 
+-- Politecnico di Milano
+-- Sofia Martellozzo, Ilaria Muratori
 ----------------------------------------------------------------------------------
 
     
@@ -38,29 +25,33 @@
     end project_reti_logiche;
     
     architecture Behavioral of project_reti_logiche is
+        
+ -----------------------------------------------------------------------------------
+ -- Stati raggiungibili dalla macchina.
+ -----------------------------------------------------------------------------------
     
     type state_type is (
-      START,      --stato iniziale della MSF
-      START_READ,   -- inizio lettura, prendo indirizzo di cui ho bisogno
-      DELAY,  --stato di attesa aggiornamento segnali, per creare una sorta di delay
-      INCREASE,
-      READ,  --stato in cui leggo da memoria il pixel 
-      CALCULATE_MAX_AND_MIN,
-      WRITE,
-      WRITE_EQUALIZATION,
-      EQUALIZATION,
-      DONE_UP,
-      DONE_DOWN);
+      START,                   -- stato iniziale della MSF
+      START_READ,              -- inizio lettura, carico indirizzo della RAM da leggere
+      READ,                    -- stato in cui leggo da memoria il pixel 
+      DELAY,                   -- stato di attesa aggiornamento segnali, per creare una sorta di delay
+      INCREASE,                -- stato in cui incemento il contatore per tener traccia dell'evoluzione dell'elaborazione 
+      CALCULATE_MAX_AND_MIN,   -- stato per il calcolo del pixel massimo e minimo
+      EQUALIZATION,            -- stato di inizio equalizzazione
+      WRITE_EQUALIZATION,      -- stato di fine equalizzazione
+      WRITE,                   -- stato in cui scrivo in memoria il pixel equalizzato
+      DONE_UP,                 -- stato per notificare fine processo
+      DONE_DOWN);              -- stato di attesa inizio eventuiale nuovo processo
                         
-                      
+-----------------------------------------------------------------------------------
+ -- Segnali utilizzati per mantenere dei dati significativi.
+-----------------------------------------------------------------------------------
                         
     signal state, current_state : state_type;
     signal current_address : std_logic_vector(15 downto 0);
-    signal column : unsigned(7 downto 0);
+    signal column : unsigned(7 downto 0);    
     signal row : unsigned(0 to 7);
     signal max_pixel_value,min_pixel_value,delta_value : integer range 0 to 255;
-    --signal temp_pixel : unsigned (7 downto 0); --:= "00000010";
-    --signal new_pixel_value : integer range 0 to 255:=0;
     signal current_pixel_value : unsigned(7 downto 0);
     signal step : integer;
     signal shift_level : integer range 0 to 8:=0; 
@@ -68,17 +59,13 @@
                     
     begin
     process(i_clk ,i_rst)
+        
+------------------------------------------------------------------------------------
+-- Variabili usate per l'equalizzazione
+------------------------------------------------------------------------------------
     
-    --variable step : integer;
-    --variable current_address : std_logic_vector(15 downto 0);
-    --variable current_pixel_value : unsigned(7 downto 0);
-    --variable max_pixel_value,min_pixel_value,delta_value : integer range 0 to 255;
-    --variable column : unsigned(7 downto 0);
-    --variable row : unsigned(0 to 7);
     variable temp_pixel : unsigned (15 downto 0); 
     variable new_pixel_value : unsigned (7 downto 0);
-    --variable shift_level : integer range 0 to 8; 
-    --variable dim_img: integer range 0 to 16384; --aggiunto
           
           begin
           
@@ -161,7 +148,6 @@
                      current_state <= START_READ;          
                     
                 when INCREASE => 
-                --incemento il contatore per tener traccia dell' evoluzione 
                     step <= step + 1;
                     current_address <= current_address + "0000000000000001";                                                              
                     state <= DELAY;
