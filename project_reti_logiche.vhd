@@ -2,6 +2,7 @@
 -- Progetto di Reti Logiche AA 2020-2021 
 -- Politecnico di Milano
 -- Sofia Martellozzo, Ilaria Muratori
+-- 10623060, 10677812
 ----------------------------------------------------------------------------------
 
     
